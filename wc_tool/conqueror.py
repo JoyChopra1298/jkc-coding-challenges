@@ -36,6 +36,14 @@ def calculate_words(file_name):
         return word_count
 
 
+def calculate_characters(file_name):
+    with open(file_name, "r") as file:
+        character_count = 0
+        for line in file:
+            # Add 1 for '\n'
+            character_count += len(line) + 1
+        return character_count
+
 def parse_arguments():
     argument_parser = argparse.ArgumentParser(description="wc is a tool to give word, line,"
                                                           " character and byte count for a txt file")
@@ -50,6 +58,8 @@ def parse_arguments():
                                  action="store_true", help="Number of lines")
     argument_parser.add_argument("-w", "--words",
                                  action="store_true", help="Number of words")
+    argument_parser.add_argument("-m", "--characters",
+                                 action="store_true", help="Number of characters")
 
     return argument_parser.parse_args()
 
@@ -69,6 +79,8 @@ def print_output_string(file_information):
         output_string += str(file_information["lines"])
     if "words" in file_information:
         output_string += str(file_information["words"])
+    if "characters" in file_information:
+        output_string += str(file_information["characters"])
 
     output_string += f' {file_information["name"]}{OutputColor.WHITE.value}'
     print(output_string)
@@ -84,6 +96,8 @@ def compute_file_information(parsed_arguments):
         file_information["lines"] = calculate_lines(parsed_arguments.file_name)
     if parsed_arguments.words:
         file_information["words"] = calculate_words(parsed_arguments.file_name)
+    if parsed_arguments.characters:
+        file_information["characters"] = calculate_characters(parsed_arguments.file_name)
     return file_information
 
 
