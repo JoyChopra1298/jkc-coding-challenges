@@ -16,11 +16,25 @@ def calculate_byte_count(file_name):
         file.seek(0, 2)
         return file.tell()
 
+
 def calculate_lines(file_name):
     with open(file_name, "r") as file:
-        file_content = file.read()
-        file_lines = file_content.split("\n")
-        return len(file_lines)
+        line_count = 0
+        # Using loop loads one line at a time
+        for line in file:
+            line_count += 1
+        return line_count - 1
+
+
+def calculate_words(file_name):
+    with open(file_name, "r") as file:
+        word_count = 0
+        for line in file:
+            words = line.split()
+            non_empty_words = [word for word in words if word.strip()]
+            word_count += len(non_empty_words)
+        return word_count
+
 
 def parse_arguments():
     argument_parser = argparse.ArgumentParser(description="wc is a tool to give word, line,"
@@ -34,6 +48,8 @@ def parse_arguments():
                                  action="store_true", help="Byte count")
     argument_parser.add_argument("-l", "--lines",
                                  action="store_true", help="Number of lines")
+    argument_parser.add_argument("-w", "--words",
+                                 action="store_true", help="Number of words")
 
     return argument_parser.parse_args()
 
@@ -49,9 +65,10 @@ def print_output_string(file_information):
     output_string = OutputColor.GREEN.value
     if "byte_count" in file_information:
         output_string += str(file_information["byte_count"])
-
     if "lines" in file_information:
         output_string += str(file_information["lines"])
+    if "words" in file_information:
+        output_string += str(file_information["words"])
 
     output_string += f' {file_information["name"]}{OutputColor.WHITE.value}'
     print(output_string)
@@ -65,6 +82,8 @@ def compute_file_information(parsed_arguments):
         file_information["byte_count"] = calculate_byte_count(parsed_arguments.file_name)
     if parsed_arguments.lines:
         file_information["lines"] = calculate_lines(parsed_arguments.file_name)
+    if parsed_arguments.words:
+        file_information["words"] = calculate_words(parsed_arguments.file_name)
     return file_information
 
 
