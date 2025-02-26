@@ -23,7 +23,7 @@ def calculate_lines(file_name):
         # Using loop loads one line at a time
         for line in file:
             line_count += 1
-        return line_count - 1
+        return line_count
 
 
 def calculate_words(file_name):
@@ -43,6 +43,7 @@ def calculate_characters(file_name):
             # Add 1 for '\n'
             character_count += len(line) + 1
         return character_count
+
 
 def parse_arguments():
     argument_parser = argparse.ArgumentParser(description="wc is a tool to give word, line,"
@@ -73,16 +74,16 @@ def validate_file_extension(file_name):
 
 def print_output_string(file_information):
     output_string = OutputColor.GREEN.value
-    if "byte_count" in file_information:
-        output_string += str(file_information["byte_count"])
     if "lines" in file_information:
-        output_string += str(file_information["lines"])
+        output_string += f'{str(file_information["lines"])} '
     if "words" in file_information:
-        output_string += str(file_information["words"])
+        output_string += f'{str(file_information["words"])} '
+    if "byte_count" in file_information:
+        output_string += f'{str(file_information["byte_count"])} '
     if "characters" in file_information:
-        output_string += str(file_information["characters"])
+        output_string += f'{str(file_information["characters"])} '
 
-    output_string += f' {file_information["name"]}{OutputColor.WHITE.value}'
+    output_string += f'{file_information["name"]}{OutputColor.WHITE.value}'
     print(output_string)
 
 
@@ -98,6 +99,16 @@ def compute_file_information(parsed_arguments):
         file_information["words"] = calculate_words(parsed_arguments.file_name)
     if parsed_arguments.characters:
         file_information["characters"] = calculate_characters(parsed_arguments.file_name)
+
+    if (
+        not parsed_arguments.byte_count and
+        not parsed_arguments.lines and
+        not parsed_arguments.words and
+        not parsed_arguments.characters
+    ):
+        file_information["lines"] = calculate_lines(parsed_arguments.file_name)
+        file_information["words"] = calculate_words(parsed_arguments.file_name)
+        file_information["byte_count"] = calculate_byte_count(parsed_arguments.file_name)
     return file_information
 
 
